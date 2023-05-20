@@ -1,67 +1,59 @@
-from SPARQLWrapper import SPARQLWrapper, JSON
+import requests
+import json
+import time
 from datetime import datetime
 
-# Set up the SPARQL endpoint
-endpoint_url = "https://query.wikidata.org/sparql"
-sparql = SPARQLWrapper(endpoint_url)
+# Function to send a query to Wikidata SPARQL endpoint
+def send_query(query):
+    url = 'https://query.wikidata.org/sparql'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0;Win64) AppleWebkit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    params = {'format': 'json', 'query': query}
 
-# Set up a new SPARQLWrapper object for the query for Abraham Lincoln
-sparql_abraham = SPARQLWrapper(endpoint_url)
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print("Error occurred during the request:", e)
+        return None
 
-# Set up the query for Abraham Lincoln
-query_abraham = """
-PREFIX wd: <http://www.wikidata.org/entity/>
-PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# Load JSON data from file
+with open('persons.json', 'r') as json_file:
+    data = json.load(json_file)
 
-SELECT ?name ?birthdate ?deathdate
-WHERE {
-  wd:Q91 rdfs:label ?name.
-  FILTER(LANG(?name) = "en").
-  wd:Q91 wdt:P569 ?birthdate.
-  wd:Q91 wdt:P570 ?deathdate.
-}
-"""
+# Iterate over each person and query their information
+for person in data['persons']:
+    code = person['code']
+    name = person['name']
 
-# Execute the query for Abraham Lincoln and retrieve the results
-sparql_abraham.setQuery(query_abraham)
-sparql_abraham.setReturnFormat(JSON)
-results_abraham = sparql_abraham.query().convert()
+    # Construct the SPARQL query
+    query = f'''
+    SELECT ?birthdate ?deathdate WHERE {{
+      wd:{code} wdt:P569 ?birthdate.
+      OPTIONAL {{ wd:{code} wdt:P570 ?deathdate. }}
+    }}
+    '''
 
-# Print the results for Abraham Lincoln
-for result in results_abraham["results"]["bindings"]:
-    name = result["name"]["value"]
-    birthdate = datetime.strptime(result["birthdate"]["value"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-    deathdate = datetime.strptime(result["deathdate"]["value"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-    print(f"Name: {name}, Birth Date: {birthdate}, Death Date: {deathdate}")
+    # Send the query and handle potential server timeouts
+    while True:
+        result = send_query(query)
+        if result is not None:
+            break
+        else:
+            print("Waiting for server timeout...")
+            time.sleep(5)
 
-
-# Set up a new SPARQLWrapper object for the query for Albert Einstein
-sparql_einstein = SPARQLWrapper(endpoint_url)
-
-# Set up the query for Albert Einstein
-query_einstein = """
-PREFIX wd: <http://www.wikidata.org/entity/>
-PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-SELECT ?name ?birthdate ?deathdate
-WHERE {
-  wd:Q937 rdfs:label ?name.
-  FILTER(LANG(?name) = "en").
-  wd:Q937 wdt:P569 ?birthdate.
-  wd:Q937 wdt:P570 ?deathdate.
-}
-"""
-
-# Execute the query for Albert Einstein and retrieve the results
-sparql_einstein.setQuery(query_einstein)
-sparql_einstein.setReturnFormat(JSON)
-results_einstein = sparql_einstein.query().convert()
-
-# Print the results for Albert Einstein
-for result in results_einstein["results"]["bindings"]:
-    name = result["name"]["value"]
-    birthdate = datetime.strptime(result["birthdate"]["value"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-    deathdate = datetime.strptime(result["deathdate"]["value"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-    print(f"Name: {name}, Birth Date: {birthdate}, Death Date: {deathdate}")
+    # Extract and print the information
+    if 'results' in result and 'bindings' in result['results']:
+        bindings = result['results']['bindings']
+        if len(bindings) > 0:
+            birthdate = datetime.strptime(bindings[0]['birthdate']['value'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
+            deathdate = datetime.strptime(bindings[0]['deathdate']['value'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d") if 'deathdate' in bindings[0] else "Unknown"
+            print(f"Name: {name}, Birth Date: {birthdate}, Death Date: {deathdate}")
+        else:
+            print(f"No information found for {name}")
+    else:
+        print(f"Error occurred while processing {name}")
+    
+    # Wait for a second before sending the next query
+    time.sleep(1)
