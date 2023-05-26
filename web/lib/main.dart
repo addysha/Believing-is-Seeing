@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:web/game.dart';
 import 'package:web/setup.dart';
+import 'apikey.dart';
 import 'initial.dart';
 import 'routes.dart' as routes;
 // import 'package:provider/provider.dart';
@@ -47,8 +48,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Seeing is Seeing',
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-      ),
+          primarySwatch: Colors.deepOrange, brightness: Brightness.dark),
       builder: (context, child) {
         return WillPopScope(
           onWillPop: () async {
@@ -69,7 +69,10 @@ class _MyAppState extends State<MyApp> {
                   returnWidget = const SetupPage();
 
                   break;
+                case routes.changeApiKey:
+                  returnWidget = ApiKey();
 
+                  break;
                 default:
                   returnWidget = const InitialPage();
               }

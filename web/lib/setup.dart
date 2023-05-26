@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
 
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:openai_client/openai_client.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:recase/recase.dart';
 import 'classes.dart';
 import 'package:image_network/image_network.dart';
+import 'package:http/http.dart' as http;
+
+import 'keys.dart';
 
 class SetupPage extends StatefulWidget {
   const SetupPage({super.key});
@@ -62,7 +67,26 @@ class _SetupPageState extends State<SetupPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: OutlinedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    try {
+                      HttpsCallable callable = FirebaseFunctions.instanceFor(
+                              region: 'australia-southeast1')
+                          .httpsCallable(
+                        'save_url_to_storage',
+                        options: HttpsCallableOptions(
+                          timeout: const Duration(seconds: 10),
+                        ),
+                      );
+                      final response = await callable.call({
+                        'url':
+                            "https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png",
+                        "name": "img${rng.nextInt(100000000)}"
+                      });
+                      print(response);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+
                     try {
                       ss(
                         () {
@@ -80,18 +104,30 @@ class _SetupPageState extends State<SetupPage> {
                       }
                       CollectionReference gamesRef =
                           FirebaseFirestore.instance.collection('Games');
-                      Reference imageRef =
-                          FirebaseStorage.instance.ref('GameImages');
 
                       Map<String, dynamic> dataForDoc = {
                         'name': nameController.text.trim()
                       };
 
+                      HttpsCallable callable = FirebaseFunctions.instanceFor(
+                              region: 'australia-southeast1')
+                          .httpsCallable(
+                        'save_url_to_storage',
+                        options: HttpsCallableOptions(
+                          timeout: const Duration(seconds: 10),
+                        ),
+                      );
                       for (var element in tempGames) {
+                        final response = await callable.call({
+                          'url': element.url,
+                          "name": element.prompt.snakeCase +
+                              rng.nextInt(100000000).toString()
+                        });
+
                         dataForDoc[element.id] = {
                           'prompt': element.prompt,
                           'isPossible': element.isPossible,
-                          'url': element.url
+                          'url': utf8.decode(response.data)
                         };
                       }
                       gamesRef.add(dataForDoc);
@@ -100,6 +136,8 @@ class _SetupPageState extends State<SetupPage> {
                         Navigator.of(context).pop();
                         tempGames.clear();
                       });
+                    } catch (e) {
+                      print(e.toString());
                     } finally {}
                   },
                   child: const Padding(
@@ -159,11 +197,56 @@ class _SetupPageState extends State<SetupPage> {
 
   Future<void> generateButton() async {
     if (generateLoading) return;
+    String badCategories = "";
+    selectedImage = null;
+    bool moderationThrow = false;
     try {
       setState(() {
         generateLoading = true;
       });
       Response<Images> response;
+
+      final prompt =
+          "${person1Controller.text} ${actionController.text} ${person2Controller.text}";
+
+      final moderationResponse = await http.post(
+          Uri.parse('https://api.openai.com/v1/moderations'),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $apiKey"
+          },
+          body: {"\"input\"": "\"$prompt\""}.toString());
+
+      final decodedJson = jsonDecode(utf8.decode(moderationResponse.bodyBytes));
+      final Map decodedMap = Map.from(decodedJson);
+
+      if (decodedMap.containsKey('results')) {
+        final resultsJson = decodedJson['results'];
+        final Map resultsMap = Map.from(resultsJson.first);
+        final categories = Map.from(resultsMap['categories']);
+
+        bool flagged = resultsMap['flagged'];
+
+        if (!flagged) {
+          for (var element in categories.entries) {
+            flagged = flagged || element.value;
+          }
+        }
+
+        if (flagged) {
+          // flaggedCategories
+          //     .addEntries(results.entries.where((element) => element.value));
+          badCategories = "Areas Flagged:\n";
+          for (var element
+              in categories.entries.where((element) => element.value)) {
+            badCategories += element.key.toString().titleCase;
+            badCategories += "\n";
+          }
+          moderationThrow = true;
+          throw Exception(
+              'Content not allowed by OpenAI moderation standards.');
+        }
+      }
 
       // if (selectedImage != null) {
       //   response = await aiClient.images
@@ -176,14 +259,15 @@ class _SetupPageState extends State<SetupPage> {
       //       )
       //       .go();
       // } else {
+
       response = await aiClient.images
           .create(
             size: ImageSize.medium,
             n: 1,
-            prompt:
-                "${person1Controller.text} ${actionController.text} ${person2Controller.text}",
+            prompt: prompt,
           )
           .go();
+
       // // }
 
       Images data = response.get();
@@ -206,9 +290,20 @@ class _SetupPageState extends State<SetupPage> {
           padding: EdgeInsets.all(8.0),
           child: Text("Error"),
         ),
-        content: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(e.toString()),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(moderationThrow
+                    ? e.toString()
+                    : 'Error with OpenAI services, your prompt may be innappropriate.')),
+            if (badCategories.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(badCategories),
+              ),
+          ],
         ),
       ).show(context);
     } finally {
@@ -222,8 +317,8 @@ class _SetupPageState extends State<SetupPage> {
   void initState() {
     super.initState();
     // Create the configuration
-    const conf = OpenAIConfiguration(
-      apiKey: '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',
+    final conf = OpenAIConfiguration(
+      apiKey: apiKey,
     );
 
 // Create a new client

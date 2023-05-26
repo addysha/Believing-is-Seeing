@@ -10,44 +10,45 @@ class InitialPage extends StatefulWidget {
 }
 
 class _InitialPageState extends State<InitialPage> {
-  Widget buildButton(String text, String path) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-          maxWidth: 120, minWidth: 80, maxHeight: 80, minHeight: 80),
-      child: ElevatedButton(
-        style: ButtonStyle(
-            shape: MaterialStatePropertyAll(BeveledRectangleBorder(
-                borderRadius: BorderRadius.circular(20)))),
-        child: Text(text),
-        onPressed: () {
-          navKey.currentState?.pushNamed(path);
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     Size sizeOfScreen = MediaQuery.of(context).size;
+    Widget buildButton(String text, String path) {
+      return ConstrainedBox(
+        constraints: const BoxConstraints(
+            maxWidth: 120, minWidth: 80, maxHeight: 80, minHeight: 80),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(500),
+          onTap: () {
+            navKey.currentState?.pushNamed(path);
+          },
+          child: Ink(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(500),
+                gradient: LinearGradient(colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.primaryContainer.withOpacity(.5)
+                ])),
+            child: Center(
+                child: Text(
+              text,
+              style: theme.textTheme.titleLarge,
+            )),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                theme.colorScheme.surface,
-                theme.colorScheme.secondary.withOpacity(.2),
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-            ),
-          ),
-          Positioned.fill(
-            top: sizeOfScreen.height * (3 / 5),
-            child: Container(
-              decoration: BoxDecoration(color: theme.colorScheme.surface),
-            ),
-          ),
+          // Positioned.fill(
+          //   top: sizeOfScreen.height * (3 / 5),
+          //   child: Container(
+          //     decoration: BoxDecoration(color: theme.colorScheme.surface),
+          //   ),
+          // ),
           Column(
             children: [
               Expanded(
@@ -55,7 +56,7 @@ class _InitialPageState extends State<InitialPage> {
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   "Believing is Seeing",
-                  style: theme.textTheme.displayMedium
+                  style: theme.textTheme.titleLarge
                       ?.copyWith(color: theme.colorScheme.onSurface),
                 ),
               )),
@@ -73,6 +74,12 @@ class _InitialPageState extends State<InitialPage> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                    width: 500,
+                    child: buildButton("Change API Key", routes.changeApiKey)),
+              )
             ],
           ),
         ],
