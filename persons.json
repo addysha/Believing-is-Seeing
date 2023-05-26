@@ -1,0 +1,215 @@
+{
+  "persons": [
+    {
+      "code": "Q7251",
+      "name": "Thomas Edison"
+    },
+    {
+      
+      "code": "Q937",
+      "name": "Albert Einstein"
+    },
+    {
+      "code": "Q34286",
+      "name": "Alexander Graham Bell"
+    },
+    {
+      "code": "Q9036",
+      "name": "Nikola Tesla"
+    },
+    {
+      "code": "Q762",
+      "name": "Leonardo da Vinci"
+    },
+    {
+      "code": "Q935",
+      "name": "Isaac Newton"
+    },
+    {
+      "code": "Q307",
+      "name": "Galileo Galilei"
+    },
+    {
+      "code": "Q34969",
+      "name": "Benjamin Franklin"
+    },
+    {
+      "code": "Q7186",
+      "name": "Marie Curie"
+    },
+    {
+      "code": "Q37064",
+      "name": "Alexander Fleming"
+    },
+    {
+      "code": "Q9041",
+      "name": "James Watt"
+    },
+    {
+      "code": "Q296898",
+      "name": "George Washington Carver"
+    },
+    {
+      "code": "Q36488",
+      "name": "Guglielmo Marconi"
+    },
+    {
+      "code": "Q40224",
+      "name": "Carl Benz"
+    },
+    {
+      "code": "Q529",
+      "name": "Louis Pasteur"
+    },
+    {
+      "code": "Q1035",
+      "name": "Charles Darwin"
+    },
+    {
+      "code": "Q280930",
+      "name": "Eli Whitney"
+    },
+    {
+      "code": "Q7251",
+      "name": "Alan Turing"
+    },
+    {
+      "code": "Q9095",
+      "name": "James Clerk Maxwell"
+    },
+    {
+      "code": "Q7259",
+      "name": "Ada Lovelace"
+    },
+    {
+      "code": "Q7604",
+      "name": "Leonhard Euler"
+    },
+    {
+      "code": "Q75782",
+      "name": "Nicolaus Otto"
+    },
+    {
+      "code": "Q1396131",
+      "name": "Wilbur Wright"
+    },
+    {
+      "code": "Q494455",
+      "name": "Orville Wright"
+    },
+    {
+      "code": "Q57098",
+      "name": "Gottlieb Daimler"
+    },
+    {
+      "code": "Q8768",
+      "name": "Henry Ford"
+    },
+    {
+      "code": "Q9047",
+      "name": "Gottfried Wilhelm Leibniz"
+    },
+    {
+      "code": "Q75698",
+      "name": "Samuel Morse"
+    },
+    {
+      "code": "Q44412",
+      "name": "Hans Christian Ørsted"
+    },
+    {
+      "code": "Q9021",
+      "name": "Max Planck"
+    },
+    {
+      "code": "Q9215",
+      "name": "Sigmund Freud"
+    },
+    {
+      "code": "Q40904",
+      "name": "Werner Heisenberg"
+    },
+    {
+      "code": "Q12674",
+      "name": "Rudolf Diesel"
+    },
+    {
+      "code": "Q83163",
+      "name": "Srinivasa Ramanujan"
+    },
+    {
+      "code": "Q131733",
+      "name": "Henry Cavendish"
+    },
+    
+    {
+      "code": "Q183246",
+      "name": "Samuel Colt"
+    },
+    {
+      "code": "Q76541",
+      "name": "Hans von Ohain"
+    },
+    {
+      "code": "Q9061",
+      "name": "Karl Marx"
+    },
+    {
+      "code": "Q80",
+      "name": "Tim Berners-Lee"
+    },
+    {
+      "code": "Q8753",
+      "name": "Enrico Fermi"
+    },
+    {
+      "code": "Q7099",
+      "name": "Emmy Noether"
+    },
+    {
+      "code": "Q39246",
+      "name": "Richard Feynman"
+    },
+    {
+      "code": "Q133614",
+      "name": "George Stephenson"
+    },
+    {
+      "code": "Q46830",
+      "name": "Robert Hooke"
+    },
+    {
+      "code": "Q184746",
+      "name": "Jane Goodall"
+    },
+    {
+      "code": "Q92760",
+      "name": "Claude Shannon"
+    },
+    {
+      "code": "Q134661",
+      "name": "George Boole"
+    },
+    {
+      "code": "Q9106",
+      "name": "Dmitri Mendeleev"
+    },
+    {
+      "code": "Q8962",
+      "name": "James Prescott Joule"
+    },
+    {
+      "code": "Q7085",
+      "name": "Niels Bohr"
+    },
+    {
+      "code": "Q133544",
+      "name": "John Logie Baird"
+    },
+    {
+      "code":"Q132537",
+      "name":"Robert Oppenheimer"
+    }
+
+  ]
+}
