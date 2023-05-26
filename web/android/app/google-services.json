@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "613969888947",
+    "project_id": "seeing-is-believing-a9d2c",
+    "storage_bucket": "seeing-is-believing-a9d2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613969888947:android:aa03cb51d1b7cc89add2c6",
+        "android_client_info": {
+          "package_name": "com.example.web"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "613969888947-rss7fhmc04qo6bdsrshkbflefqcigjlf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5lB8IP0KzkmK8WJn_tx6Vxpg6kHPl6hA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "613969888947-rss7fhmc04qo6bdsrshkbflefqcigjlf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
