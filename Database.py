@@ -29,7 +29,7 @@ for person in data['persons']:
     # Construct the SPARQL query
     query = f'''
     SELECT ?birthdate ?deathdate WHERE {{
-      wd:{code} wdt:P569 ?birthdate.
+      wd:{code} wdt:P569 ?birthdate.    
       OPTIONAL {{ wd:{code} wdt:P570 ?deathdate. }}
     }}
     '''
