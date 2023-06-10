@@ -116,16 +116,18 @@ class _GamePageState extends State<GamePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-              child: InkWell(
-            onTap: () {
-              setChoice(true);
-            },
-            child: Center(
+            child: InkWell(
+              onTap: () {
+                setChoice(true);
+              },
+              child: Center(
                 child: Text(
-              "Possible?",
-              style: theme.textTheme.titleLarge,
-            ),),
-          ),),
+                  "Possible?",
+                  style: theme.textTheme.titleLarge,
+                ),
+              ),
+            ),
+          ),
           Expanded(
               flex: 2,
               child: Center(
